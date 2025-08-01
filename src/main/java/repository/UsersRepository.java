@@ -13,6 +13,35 @@ import repository.util.StatementStrategy;
 public class UsersRepository {
 	private SqlContext sql = new SqlContext();
 	
+	/** 
+	 * 회원 검색 메소드
+	 */
+	public UsersDto selectUser(final UsersDto usersDto) {
+		sql.executeQuery(new StatementStrategy() {
+			public PreparedStatement work(Connection c) throws SQLException {
+				PreparedStatement ps = c.prepareStatement("select * from users WHERE userid = ? AND password = ? AND flag = 0");
+				
+				ps.setString(1, usersDto.getUserId());
+				ps.setString(2, usersDto.getPassword());
+				
+				return ps;
+			}
+		}, new ResultSetStrategy() {
+			public ResultSet work(PreparedStatement pstmt) throws SQLException {
+				ResultSet rs = pstmt.executeQuery();
+				if(rs.next()) {
+					usersDto.setName(rs.getString("name"));
+					usersDto.setEmail(rs.getString("email"));
+					usersDto.setBirthDay(rs.getDate("birthday"));
+					usersDto.setRegDate(rs.getDate("regdate"));
+					return rs;
+				}
+				return null;
+			}
+		});
+		return usersDto;
+	}
+	
 	/**
 	 * 회원가입 메소드
 	 * <ul>
@@ -28,7 +57,7 @@ public class UsersRepository {
 	 * 
 	 * @return void
 	 */
-	public void signin(final UsersDto usersDto) {
+ 	public void signin(final UsersDto usersDto) {
 		sql.executeUpdate(new StatementStrategy() {
 			public PreparedStatement work(Connection c) throws SQLException {
 				PreparedStatement ps = c.prepareStatement("insert into users (userid, password, name, email, birthday) values (?, ?, ?, ?, ?)");
@@ -165,20 +194,60 @@ public class UsersRepository {
 	}
 
 	/**
-	 * 유저 정보 변경
+	 * 회원 이메일 정보 변경
+	 * <ul>
+	 * <li>usersDto 필요한 필드
+	 * <li>String userid
+	 * <li>String password
 	 * 
-	 * @param usersDto
+	 * <li>updateDto 필요한 필드
+	 * <li>String email
+	 * </ul>
+	 * 
+	 * @param usersDto : 기존 계정 정보
+	 * @param updateDto: 바꿀 계정 정보
+	 * 
+	 * @return void
 	 */
-	public void userInfoChange(final UsersDto usersDto) {
+	public void emailChange(final UsersDto usersDto, final UsersDto updateDto) {
 		sql.executeUpdate(new StatementStrategy() {
 			public PreparedStatement work(Connection c) throws SQLException {
-				PreparedStatement ps = c.prepareStatement("");
+				PreparedStatement ps = c.prepareStatement("UPDATE users SET email = ? WHERE userid = ? AND password = ?");
 				
-				System.out.println(ps);
+				ps.setString(1, updateDto.getEmail());
+				ps.setString(2, usersDto.getUserId());
+				ps.setString(3, usersDto.getPassword());
 				
-				return null;
+				return ps;
 			}
-			
+		});
+	}
+	
+	/**
+	 * 회원 패스워드 정보 변경
+	 * <ul>
+	 * <li>usersDto 필요한 필드
+	 * <li>String userid
+	 * <li>String password
+	 * 
+	 * <li>updateDto 필요한 필드
+	 * <li>String password
+	 * </ul>
+	 * 
+	 * @param usersDto : 기존 계정 정보
+	 * @param updateDto: 바꿀 계정 정보
+	 */
+	public void passwordChange(final UsersDto usersDto, final UsersDto updateDto) {
+		sql.executeUpdate(new StatementStrategy() {
+			public PreparedStatement work(Connection c) throws SQLException {
+				PreparedStatement ps = c.prepareStatement("UPDATE users SET password = ? WHERE userid = ? AND password = ?");
+				
+				ps.setString(1, updateDto.getPassword());
+				ps.setString(2, usersDto.getUserId());
+				ps.setString(3, usersDto.getPassword());
+				
+				return ps;
+			}
 		});
 	}
 	

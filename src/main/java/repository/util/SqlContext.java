@@ -5,6 +5,8 @@ import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 import java.sql.SQLException;
 
+import dto.UsersDto;
+
 public class SqlContext {
 	
 	private DBAccess access;
@@ -14,18 +16,7 @@ public class SqlContext {
 		access = DBAccess.getInstance();
 	}
 	
-	/**
-	 * <ul>
-	 * <li>INSERT, UPDATE, DELETE 메소드용 람다식
-	 * sql.executeUpdate(new StatementStrategy() {
-	 *    public PreparedStatement work(Connection c) throws SQLException {
-	 *    }
-	 * });
-	 * </ul>
-	 * @param StatementStrategy Interface
-	 * 
-	 * @throws SQLException
-	 */
+	/* INSERT, UPDATE, DELETE 외부 제공 람다식 */
 	public void executeUpdate(StatementStrategy pstmt) {
 		this.updateStatement(pstmt);
 	}

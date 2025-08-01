@@ -2,6 +2,8 @@ package entity;
 
 import java.sql.Date;
 
+import dto.UsersDto;
+
 public class UsersEntity {
 	/* Users Table Field */
 	private String userId;
@@ -55,5 +57,9 @@ public class UsersEntity {
 		return this.flag;
 	}
 	/* Getter End */
+	
+	public UsersDto toDto() {
+		return new UsersDto(userId, password, name, email, birthDay, regDate);
+	}
 	
 }

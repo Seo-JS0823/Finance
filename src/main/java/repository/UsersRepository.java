@@ -17,28 +17,30 @@ public class UsersRepository {
 	 * 회원 검색 메소드
 	 */
 	public UsersDto selectUser(final UsersDto usersDto) {
-		sql.executeQuery(new StatementStrategy() {
-			public PreparedStatement work(Connection c) throws SQLException {
-				PreparedStatement ps = c.prepareStatement("select * from users WHERE userid = ? AND password = ? AND flag = 0");
+		sql.executeQuery(
+			new StatementStrategy() {
+				public PreparedStatement work(Connection c) throws SQLException {
+					PreparedStatement ps = c.prepareStatement("select * from users WHERE userid = ? AND password = ? AND flag = 0");
 				
-				ps.setString(1, usersDto.getUserId());
-				ps.setString(2, usersDto.getPassword());
+					ps.setString(1, usersDto.getUserId());
+					ps.setString(2, usersDto.getPassword());
 				
-				return ps;
-			}
-		}, new ResultSetStrategy() {
-			public ResultSet work(PreparedStatement pstmt) throws SQLException {
-				ResultSet rs = pstmt.executeQuery();
-				if(rs.next()) {
-					usersDto.setName(rs.getString("name"));
-					usersDto.setEmail(rs.getString("email"));
-					usersDto.setBirthDay(rs.getDate("birthday"));
-					usersDto.setRegDate(rs.getDate("regdate"));
-					return rs;
+					return ps;
 				}
-				return null;
-			}
-		});
+			},
+			new ResultSetStrategy() {
+				public ResultSet work(PreparedStatement pstmt) throws SQLException {
+					ResultSet rs = pstmt.executeQuery();
+					if(rs.next()) {
+						usersDto.setName(rs.getString("name"));
+						usersDto.setEmail(rs.getString("email"));
+						usersDto.setBirthDay(rs.getDate("birthday"));
+						usersDto.setRegDate(rs.getDate("regdate"));
+						return rs;
+					}
+					return null;
+				}
+			});
 		return usersDto;
 	}
 	
